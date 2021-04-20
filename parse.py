@@ -71,7 +71,8 @@ def write_input_file(G, path):
     """
     with open(path, "w") as fo:
         n = len(G)
-        lines = nx.generate_edgelist(G, data=["weight"])
+        # lines = nx.generate_edgelist(G, data=["weight"])
+        lines = [f"{u} {v} {d['weight']:.3f}" for u,v,d in G.edges(data=True)]
         fo.write(str(n) + "\n")
         fo.writelines("\n".join(lines))
         fo.close()
