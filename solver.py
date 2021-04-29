@@ -93,6 +93,8 @@ def naive(G, cnum, knum):
     return c, k
 
 
+
+
 # Here's an example of how to run your solver.
 
 # Usage: python3 solver.py test.in

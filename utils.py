@@ -1,5 +1,8 @@
 import networkx as nx
 
+def dijkstra_path(G):
+
+
 def is_valid_solution(G, c, k):
     """
     Checks whether D is a valid mapping of G, by checking every room adheres to the stress budget.
