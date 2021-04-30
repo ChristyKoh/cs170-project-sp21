@@ -4,7 +4,6 @@ import numpy as np
 def dijsktra_path(G):
     node_count = len(G.nodes)
     path = nx.dijkstra_path(G, 0, node_count - 1)
-    print(path)
     edge = [(path[i], path[i + 1]) for i in range(len(path) - 1)]
     return edge
 
@@ -21,6 +20,7 @@ def score_components(Gg):
     dj_path = dijsktra_path(Gg)
     weight, conn, score, in_shortest_path = [], [], [], []
     edges = Gg.edges.data()
+    num_nodes = len(Gg.nodes)
 
     for u, v, prop in edges:
         conn.append(Gg.degree[u] + Gg.degree[v] - 2)
@@ -53,7 +53,11 @@ def score_components(Gg):
     argsort = np.argsort(np.array(e_score))
     sorted_edge = [edges[i] for i in argsort]
     sorted_node = np.argsort(np.array(n_score))
-    np.delete(sorted_node, [0, len(Gg.nodes) - 1])
+
+    #remove s and t 
+    sorted_node = sorted_node[sorted_node != 0]
+    sorted_node = sorted_node[sorted_node != num_nodes - 1]
+
 
     return sorted_edge, sorted_node
     
@@ -66,9 +70,49 @@ def heuristics_greedy(G, cnum, knum):
         c: list of cities to remove
         k: list of edges to remove
     """
-    sorted_edge, sorted_node = heuristics(G)
+    G_cut = G.copy()
+    sorted_edge, sorted_node = score_components(G_cut)
+    c, k = [], []
+
+    for n in sorted_node:
+        copy = G_cut.copy()
+        copy.remove_node(n)
+        if nx.is_connected(copy):
+            cnum -= 1
+            c.append(n)
+            G_cut = copy
+        if cnum == 0:
+            break
+
+    for u, v in sorted_edge:
+        if u not in c and v not in c:
+            G_cut.remove_edge(u, v)
+            if nx.is_connected(G_cut):
+                knum -= 1 
+                k.append((u, v))
+            else:
+                G_cut.add_edge(u, v)
+        if knum == 0:
+            break
     
+    return c, k
+
+
+# def remove_edge(G, edge):
+
+# def remove_node(G, node):
+#     """
+#     Remove node from G if possible. 
+
+#     Args:
+#         G ([type]): [description]
+#         node ([type]): [description]
+#     """
+
+
+            
     
+
 
 
     
