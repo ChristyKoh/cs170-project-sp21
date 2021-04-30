@@ -7,7 +7,6 @@ def dijsktra_path(G):
     edge = [(path[i], path[i + 1]) for i in range(len(path) - 1)]
     return edge
 
-
 def score_components(Gg):
     """
     heuristically calculate score of each edge
