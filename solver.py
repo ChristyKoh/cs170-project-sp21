@@ -4,11 +4,9 @@ from utils import is_valid_solution, calculate_score
 import sys
 from os.path import basename, normpath
 import glob
-import heapq
 from collections import Counter
 import numpy as np
 from heuristics import heuristics_greedy
-
 
 def solve(G):
     """
@@ -45,13 +43,15 @@ def naive(G, cnum, knum):
 
     nodes = [] # captures freq of nodes in shortest paths
     forbidden_edges = set() # cannot cuts
+    forbidden_nodes = set() # cannot rm
     stop_cutting = False
 
-    while not stop_cutting and knum > 0: # make knum cuts
+    while not stop_cutting and knum >= 0 and cnum > 0: # make knum cuts, on 0 remove node
         path = nx.dijkstra_path(G_cut, s, t, weight="weight")
 
         u = 0
         edges = []
+        # add edges to list
         for v in path[1:]:
             edges.append([u,v])
             if v != t:
@@ -70,7 +70,7 @@ def naive(G, cnum, knum):
             
             # remove edge
             G_cut.remove_edge(e[0], e[1])
-            if nx.is_connected(G_cut): 
+            if nx.is_connected(G_cut):
                 k.append(e)
                 # print(f"{knum}: cutting edge {e}")
                 knum -= 1
@@ -79,9 +79,31 @@ def naive(G, cnum, knum):
             G_cut.add_edge(e[0], e[1])
             forbidden_edges.append(e)
 
-    counts = Counter(nodes)
-    top_c = counts.most_common(cnum) # sort
-    c = [v[0] for v in top_c]
+        if knum == 0:
+            if cnum == 0:   # finished removing all nodes
+                break
+
+            # otherwise, remove a single node
+            counts = Counter(nodes)
+            top_c = counts.most_common(1)[0][0]
+
+            adj_edges = G_cut.edges(top_c, data="weight")
+            G_cut.remove_node(top_c)
+            
+            # c = [v[0] for v in top_c]
+            
+            if nx.is_connected(G_cut):
+                c.append(top_c)
+                # print(f"{knum}: cutting node {top_c[0][0]}")
+                cnum -= 1
+                break
+            # if disconnects graph, add node back
+            G_cut.add_node(top_c)
+            G_cut.add_edges_from(adj_edges)
+
+            # TODO add back k shortest paths removed
+            # num_c
+    
     # print(f"counts: {counts}")
 
     G_cut.remove_nodes_from(c)
@@ -92,8 +114,6 @@ def naive(G, cnum, knum):
     print(f"rm nodes: {c}")
     print(f"rm edges: {k}")
     return c, k
-
-
 
 
 # Here's an example of how to run your solver.
@@ -112,7 +132,7 @@ def naive(G, cnum, knum):
 
 # For testing a folder of inputs to create a folder of outputs, you can use glob (need to import it)
 if __name__ == '__main__':
-    inputs = glob.glob('inputs/*')
+    inputs = glob.glob('inputs/small/*')
     for input_path in inputs:
         output_path = 'outputs/' + basename(normpath(input_path))[:-3] + '.out'
         G = read_input_file(input_path)

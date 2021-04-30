@@ -1,20 +1,5 @@
 import networkx as nx
 
-def dijsktra_path(G):
-    """generate dijsktra path of G
-
-    Args:
-        G ([type]): networkx.Graph
-
-    Returns:
-        edge: list of edges in shortest path 
-    """
-    node_count = len(G.nodes)
-    path = nx.dijkstra_path(G, 0, node_count - 1)
-    edge = [(path[i], path[i + 1]) for i in range(len(path) - 1)]
-    return edge
-
-
 def is_valid_solution(G, c, k):
     """
     Checks whether D is a valid mapping of G, by checking every room adheres to the stress budget.
