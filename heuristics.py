@@ -26,7 +26,7 @@ def score_components(Gg):
         conn.append(Gg.degree[u] + Gg.degree[v] - 2)
         weight.append(prop['weight'])
         if (u,v) in dj_path:
-            in_shortest_path.append(0.5) #tune this weight
+            in_shortest_path.append(0.8) #tune this weight
         else:
             in_shortest_path.append(0)
     
