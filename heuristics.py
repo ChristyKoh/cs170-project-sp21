@@ -9,7 +9,7 @@ def dijsktra_path(G):
     return edge
 
 
-def score_components(G):
+def score_components(Gg):
     """
     heuristically calculate score of each edge
         Gg: networkx.Graph
@@ -19,10 +19,7 @@ def score_components(G):
 
     #set up
     dj_path = dijsktra_path(Gg)
-    weight = []
-    conn = []
-    score = []
-    in_shortest_path = []
+    weight, conn, score, in_shortest_path = [], [], [], []
     edges = Gg.edges.data()
 
     for u, v, prop in edges:
@@ -34,8 +31,7 @@ def score_components(G):
             in_shortest_path.append(0)
     
     #normalize score 
-    max_weight = max(weight)
-    max_conn = max(conn)
+    max_weight, max_conn = max(weight), max(conn)
     weight = [w/max_weight for w in weight] #less than 1
     conn  = [c/max_conn for c in conn] #less than 1
     
@@ -71,7 +67,8 @@ def heuristics_greedy(G, cnum, knum):
         k: list of edges to remove
     """
     sorted_edge, sorted_node = heuristics(G)
-    c = sorted_node[:cnum]
+    
+    
 
 
     

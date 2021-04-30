@@ -7,7 +7,7 @@ import glob
 import heapq
 from collections import Counter
 import numpy as np
-from heuristics import 
+from heuristics import heuristics_greedy
 
 
 def solve(G):
