@@ -18,11 +18,11 @@ def solve(G):
     """
     size = G.number_of_nodes()
     if size <= 30:
-        return heuristics_greedy(G, 1, 15)
+        return naive(G, 1, 15)
     elif size <= 50:
-        return heuristics_greedy(G, 3, 50)
+        return naive(G, 3, 50)
     else:
-        return heuristics_greedy(G, 5, 100)
+        return naive(G, 5, 100)
 
 def naive(G, cnum, knum):
     """
@@ -47,6 +47,7 @@ def naive(G, cnum, knum):
     stop_cutting = False
 
     while not stop_cutting and knum >= 0 and cnum > 0: # make knum cuts, on 0 remove node
+        # print("finding path")
         path = nx.dijkstra_path(G_cut, s, t, weight="weight")
 
         u = 0
@@ -72,15 +73,16 @@ def naive(G, cnum, knum):
             G_cut.remove_edge(e[0], e[1])
             if nx.is_connected(G_cut):
                 k.append(e)
-                # print(f"{knum}: cutting edge {e}")
+                print(f"{knum}: cutting edge {e}")
                 knum -= 1
                 break
             # if disconnects graph, add edge back
             G_cut.add_edge(e[0], e[1])
             forbidden_edges.append(e)
+            print(f"      adding back edge {e}")
 
         if knum == 0:
-            if cnum == 0:   # finished removing all nodes
+            if cnum == 0:   # finished removing all cnum nodes
                 break
 
             # otherwise, remove a single node
@@ -94,12 +96,15 @@ def naive(G, cnum, knum):
             
             if nx.is_connected(G_cut):
                 c.append(top_c)
-                # print(f"{knum}: cutting node {top_c[0][0]}")
+                print(f"{knum}: cutting node {top_c}")
                 cnum -= 1
-                break
+                continue
             # if disconnects graph, add node back
             G_cut.add_node(top_c)
             G_cut.add_edges_from(adj_edges)
+            forbidden_nodes.add(top_c)
+
+            print(k)
 
             # TODO add back k shortest paths removed
             # num_c
@@ -110,7 +115,7 @@ def naive(G, cnum, knum):
 
     # TODO iterate, add count from most common node to knum, rm edges from edges
     # TODO catch case where no more cuts can be made
-
+    
     print(f"rm nodes: {c}")
     print(f"rm edges: {k}")
     return c, k
