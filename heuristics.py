@@ -96,7 +96,6 @@ def heuristics_greedy(G, cnum, knum):
     
     return c, k
 
-
 # def remove_edge(G, edge):
 
 # def remove_node(G, node):
