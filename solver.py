@@ -141,9 +141,7 @@ def naive(G, cnum, knum):
 if __name__ == '__main__':
     inputs = glob.glob('inputs/small/*')
     for input_path in inputs:
-        print()
-        print(f"solving {input_path}")
-        output_path = 'outputs/' + basename(normpath(input_path))[:-3] + '.out'
+        output_path = 'outputs/small/' + basename(normpath(input_path))[:-3] + '.out'
         G = read_input_file(input_path)
         c, k = solve(G)
         assert is_valid_solution(G, c, k)
