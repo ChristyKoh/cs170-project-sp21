@@ -41,40 +41,56 @@ def solve(G):
 
 # For testing a folder of inputs to create a folder of outputs, you can use glob (need to import it)
 if __name__ == '__main__':
+    sizes = sys.argv[1]
+
+    log_suffix = time.strftime("%d%b_%H:%M:%S", time.localtime()) + ".txt"
+
     starttime = time.time()
 
-    inputs = glob.glob('inputs/small/*')
-    log = open('outputs/small_scores.txt', 'w+')
-    for input_path in inputs:
-        output_path = 'outputs/small/' + basename(normpath(input_path))[:-3] + '.out'
-        G = read_input_file(input_path)
-        c, k = solve(G)
-        assert is_valid_solution(G, c, k)
-        distance = calculate_score(G, c, k)
-        log.write(f"{input_path}: {distance}\n")
-        write_output_file(G, c, k, output_path)
-    log.close()
+    if 's' in sizes:
+        print("-------- RUNNING SMALL INPUTS --------")
+        inputs = sorted(glob.glob('inputs/small/*'))
+        log = open('outputs/sm_score_' + log_suffix, 'w+')
+        for input_path in inputs:
+            output_path = 'outputs/small/' + basename(normpath(input_path))[:-3] + '.out'
+            G = read_input_file(input_path)
+            c, k = solve(G)
+            assert is_valid_solution(G, c, k)
+            distance = calculate_score(G, c, k)
+            log.write(f"{input_path}: {distance}\n")
+            write_output_file(G, c, k, output_path)
+        log.close()
+        print(f"small inputs runtime: {(time.time() - starttime)} sec")
+        starttime = time.time()
 
-    inputs = glob.glob('inputs/medium/*')
-    log = open('outputs/medium_scores.txt', 'w+')
-    for input_path in inputs:
-        output_path = 'outputs/medium/' + basename(normpath(input_path))[:-3] + '.out'
-        G = read_input_file(input_path)
-        c, k = solve(G)
-        assert is_valid_solution(G, c, k)
-        distance = calculate_score(G, c, k)
-        log.write(f"{input_path}: {distance}\n")
-        write_output_file(G, c, k, output_path)
-    log.close()
+    if 'm' in sizes:
+        print("-------- RUNNING MEDIUM INPUTS --------")
+        inputs = glob.glob('inputs/medium/*')
+        log = open('outputs/md_score_' + log_suffix, 'w+')
+        for input_path in inputs:
+            output_path = 'outputs/medium/' + basename(normpath(input_path))[:-3] + '.out'
+            log.write(f"{input_path}: ")
+            G = read_input_file(input_path)
+            c, k = solve(G)
+            assert is_valid_solution(G, c, k)
+            distance = calculate_score(G, c, k)
+            log.write(f"{distance}\n")
+            write_output_file(G, c, k, output_path)
+        log.close()
+        print(f"medium inputs runtime: {(time.time() - starttime)} sec")
+        starttime = time.time()
 
-    inputs = glob.glob('inputs/large/*')
-    log = open('outputs/large_scores.txt', 'w+')
-    for input_path in inputs:
-        output_path = 'outputs/large/' + basename(normpath(input_path))[:-3] + '.out'
-        G = read_input_file(input_path)
-        c, k = solve(G)
-        assert is_valid_solution(G, c, k)
-        distance = calculate_score(G, c, k)
-        log.write(f"{input_path}: {distance}\n")
-        write_output_file(G, c, k, output_path)
-    log.close()
+    if 'l' in sizes:
+        print("-------- RUNNING LARGE INPUTS --------")
+        inputs = sorted(glob.glob('inputs/large/*'))
+        log = open('outputs/lg_score_' + log_suffix, 'w+')
+        for input_path in inputs:
+            output_path = 'outputs/large/' + basename(normpath(input_path))[:-3] + '.out'
+            G = read_input_file(input_path)
+            c, k = solve(G)
+            assert is_valid_solution(G, c, k)
+            distance = calculate_score(G, c, k)
+            log.write(f"{input_path}: {distance}\n")
+            write_output_file(G, c, k, output_path)
+        log.close()
+        print(f"large inputs runtime: {(time.time() - starttime)} sec")
