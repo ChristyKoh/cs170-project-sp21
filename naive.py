@@ -24,21 +24,20 @@ def naive(G, cnum, knum):
     forbidden_nodes = set() # cannot rm
     stop_cutting = False
 
-    while not stop_cutting and knum >= 0 and cnum > 0: # make knum cuts, on 0 remove node
-        # print("finding path")
+    while not stop_cutting and knum > 0 and cnum > 0: # make knum cuts, on 0 remove node
         path = nx.dijkstra_path(G_cut, s, t, weight="weight")
 
         u = 0
         edges = []
         # add edges to list
         for v in path[1:]:
-            edges.append((u,v,G_cut[u][v]["weight"]))
+            edges.append((u, v, G_cut[u][v]["weight"]))
             if v != t:
                 nodes.append(v)
             u = v
 
         # take min edge
-        edges.sort(key=lambda e: G_cut[e[0]][e[1]]["weight"])
+        edges.sort(key=lambda e: e[2]) ## CAN CHANGE SCORING METHOD HERE
         # print(f"sorted edges: {edges}")
 
         all_edges_checked = True
@@ -68,33 +67,31 @@ def naive(G, cnum, knum):
             # this shortest path, cannot be altered
             break
 
-        # if knum == 0:
-        #     if cnum == 0:   # finished removing all cnum nodes
-        #         break
+        if knum == 0:
+            if cnum == 0:   # finished removing all cnum nodes
+                break
 
-        #     # otherwise, remove a single node
-        #     counts = Counter(nodes)
-        #     top_c = counts.most_common(1)[0][0]
+            # otherwise, remove a single node
+            counts = Counter(nodes)
+            top_c = counts.most_common(1)[0][0]
 
-        #     adj_edges = G_cut.edges(top_c, data="weight")
-        #     G_cut.remove_node(top_c)
+            adj_edges = G_cut.edges(top_c, data="weight")
+            G_cut.remove_node(top_c)
             
-        #     # c = [v[0] for v in top_c]
+            # c = [v[0] for v in top_c]
             
-        #     if nx.is_connected(G_cut):
-        #         c.append(top_c)
-        #         print(f"{knum}: cutting node {top_c}")
-        #         cnum -= 1
-        #         continue
-        #     # if disconnects graph, add node back
-        #     G_cut.add_node(top_c)
-        #     G_cut.add_edges_from(adj_edges)
-        #     forbidden_nodes.add(top_c)
+            if nx.is_connected(G_cut):
+                c.append(top_c)
+                # print(f"{knum}: cutting node {top_c}")
+                cnum -= 1
+                continue
+            # if disconnects graph, add node back
+            G_cut.add_node(top_c)
+            G_cut.add_edges_from(adj_edges)
+            forbidden_nodes.add(top_c)
 
-        #     print(k)
-
-        #     # TODO add back k shortest paths removed
-        #     # num_c
+            # TODO add back k shortest paths removed
+            # num_c
     
     # print(f"counts: {counts}")
 

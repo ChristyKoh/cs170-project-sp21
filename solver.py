@@ -1,4 +1,5 @@
 import networkx as nx
+import time
 from parse import read_input_file, write_output_file
 from utils import is_valid_solution, calculate_score
 import sys
@@ -40,6 +41,8 @@ def solve(G):
 
 # For testing a folder of inputs to create a folder of outputs, you can use glob (need to import it)
 if __name__ == '__main__':
+    starttime = time.time()
+
     inputs = glob.glob('inputs/small/*')
     log = open('outputs/small_scores.txt', 'w+')
     for input_path in inputs:
@@ -52,20 +55,26 @@ if __name__ == '__main__':
         write_output_file(G, c, k, output_path)
     log.close()
 
-    # inputs = glob.glob('inputs/medium/*')
-    # for input_path in inputs:
-    #     output_path = 'outputs/medium/' + basename(normpath(input_path))[:-3] + '.out'
-    #     G = read_input_file(input_path)
-    #     c, k = solve(G)
-    #     assert is_valid_solution(G, c, k)
-    #     distance = calculate_score(G, c, k)
-    #     write_output_file(G, c, k, output_path)
+    inputs = glob.glob('inputs/medium/*')
+    log = open('outputs/medium_scores.txt', 'w+')
+    for input_path in inputs:
+        output_path = 'outputs/medium/' + basename(normpath(input_path))[:-3] + '.out'
+        G = read_input_file(input_path)
+        c, k = solve(G)
+        assert is_valid_solution(G, c, k)
+        distance = calculate_score(G, c, k)
+        log.write(f"{input_path}: {distance}\n")
+        write_output_file(G, c, k, output_path)
+    log.close()
 
-    # inputs = glob.glob('inputs/large/*')
-    # for input_path in inputs:
-    #     output_path = 'outputs/large/' + basename(normpath(input_path))[:-3] + '.out'
-    #     G = read_input_file(input_path)
-    #     c, k = solve(G)
-    #     assert is_valid_solution(G, c, k)
-    #     distance = calculate_score(G, c, k)
-    #     write_output_file(G, c, k, output_path)
+    inputs = glob.glob('inputs/large/*')
+    log = open('outputs/large_scores.txt', 'w+')
+    for input_path in inputs:
+        output_path = 'outputs/large/' + basename(normpath(input_path))[:-3] + '.out'
+        G = read_input_file(input_path)
+        c, k = solve(G)
+        assert is_valid_solution(G, c, k)
+        distance = calculate_score(G, c, k)
+        log.write(f"{input_path}: {distance}\n")
+        write_output_file(G, c, k, output_path)
+    log.close()
