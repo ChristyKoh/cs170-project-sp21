@@ -20,6 +20,7 @@ def naive(G, cnum, knum):
     s, t = 0, G_cut.number_of_nodes() - 1
 
     nodes = [] # captures freq of nodes in shortest paths
+    node_scores = [0 for _ in range(G_cut.number_of_nodes())] # score for nodes to cut
     forbidden_edges = set() # cannot cuts
     forbidden_nodes = set() # cannot rm
     stop_cutting = False

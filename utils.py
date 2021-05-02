@@ -1,4 +1,5 @@
 import networkx as nx
+import glob
 
 def is_valid_solution(G, c, k):
     """
@@ -53,6 +54,43 @@ def diff_score_files(size):
     Args:
         size: string (s/m/l)
     Returns:
-        None
+        float: net gain
+        float: net loss
     """
     # TODO implement
+    inputs = sorted(glob.glob(f'outputs/{size}*'), reverse=True)[:2]
+    print(inputs)
+    # take the last 2 files
+
+    last_file = open(inputs[0], 'r')
+    prev_file = open(inputs[1], 'r')
+    diff_file = open(f"outputs/diff_{size}.txt", 'w')
+
+    gain, loss = 0, 0
+
+    while last_file.readable() and prev_file.readable():
+        lline, pline = last_file.readline().split(" "), prev_file.readline().split(" ")
+        assert lline[0] == pline[0]
+
+        if len(lline) < 2: 
+            break
+
+        # extract scores
+        last_score = float(lline[1])
+        prev_score = float(pline[1])
+        diff = last_score - prev_score
+
+        if diff >= 0:
+            gain += diff
+        else:
+            loss += diff
+
+        diff_file.write(f"{lline[0]} {diff}\n")
+
+    last_file.close()
+    prev_file.close()
+    diff_file.close()
+
+    print(f"total gain: {gain}, total loss: {loss}")
+    print(f"net gain: {gain + loss}")
+    return gain, loss

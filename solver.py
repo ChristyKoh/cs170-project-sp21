@@ -1,7 +1,7 @@
 import networkx as nx
 import time
 from parse import read_input_file, write_output_file
-from utils import is_valid_solution, calculate_score
+from utils import is_valid_solution, calculate_score, diff_score_files
 import sys
 from os.path import basename, normpath
 import glob
@@ -64,9 +64,12 @@ if __name__ == '__main__':
 
     if 's' in sizes:
         run_input('small')
+        diff_score_files('small')
 
     if 'm' in sizes:
         run_input('medium')
+        diff_score_files('medium')
 
     if 'l' in sizes:
         run_input('large')
+        diff_score_files('large')
