@@ -45,3 +45,14 @@ def calculate_score(G, c, k):
     final_min_dist = nx.dijkstra_path_length(H, 0, node_count-1)
     difference = final_min_dist - original_min_dist
     return difference
+
+def diff_score_files(size):
+    """
+    Calculates the improvement between two most recent score files, 
+    writes to diff file.
+    Args:
+        size: string (s/m/l)
+    Returns:
+        None
+    """
+    # TODO implement
