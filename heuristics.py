@@ -129,6 +129,44 @@ def heuristics_greedy(G, cnum, knum):
     
     return c, k
 
+def look_advace_small(G, cnum, knum, beamSize):
+    
+    
+    G_cut = G.copy()
+    sorted_edge, sorted_node = score_components(G_cut)
+    sorted_node = sorted_node[:30]
+    c, k = [], []
+    
+    while len(c) < cnum:
+        score_node = max(sorted_node, key=lambda x: calculate_score(G, c + [x], k))
+        c.append(score_node)
+    
+    sorted_edge =list(filter(lambda e: e[0] not in c and e[1] not in c, sorted_edge))
+    sorted_edge = list(filter(lambda x: is_valid_solution(G, c, k + [x]), sorted_edge))
+    nlargest = heapq.nlargest(beamSize, sorted_edge, key=lambda x: calculate_score(G, c, k + [x]))
+    
+    beams = [[[x for x in sorted_edge if x != i], [i], calculate_score(G, c, [i])] for i in nlargest] # [list_of_edges, k, score]
+    
+    k_tracker = 0
+    while k_tracker < knum:
+        new_beams = []
+        # curate new beams 
+        for b in beams:
+            b[0] = list(filter(lambda x: is_valid_solution(G, c, b[1] + [x]), b[0]))
+            nlargest = heapq.nlargest(beamSize, b[0], key=lambda x: calculate_score(G, c, b[1] + [x]))
+            for i in nlargest:
+                new_beams.append([[x for x in b[0] if x != i], b[1] + [i], calculate_score(G, c, b[1] + [i])])
+            beams = heapq.nlargest(beamSize, new_beams, key=lambda x: x[2])
+                        
+        k_tracker += 1
+    
+    best = max(beams, key=lambda x:x[2])
+    
+
+    return c, best[1], best[2]
+    
+    
+# look_advace_small(Gg, 1, 25, 3)
 
 # def remove_edge(G, edge):
 
