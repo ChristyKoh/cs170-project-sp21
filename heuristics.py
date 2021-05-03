@@ -163,7 +163,7 @@ def look_advace_small(G, cnum, knum, beamSize):
             if len(b[0]) == 0:
                 new_beams.append(b)
             else:
-                nlargest = heapq.nlargest(beamSize, b[0], key=lambda x: calculate_score(G, b[3], b[1] + [x]))
+                nlargest = heapq.nlargest(beamSize * 2, b[0], key=lambda x: calculate_score(G, b[3], b[1] + [x]))
                 for i in nlargest:
                     new_beams.append([[x for x in b[0] if x != i], b[1] + [i], calculate_score(G, b[3], b[1] + [i]), b[3]])
         beams = heapq.nlargest(beamSize * 2, new_beams, key=lambda x: x[2])
