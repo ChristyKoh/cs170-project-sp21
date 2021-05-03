@@ -145,14 +145,18 @@ def look_advace_small(G, cnum, knum, beamSize):
     
     beams = []# [list_of_edges, k, score, c]
 
-    for c in score_node:
-        sorted_edge =list(filter(lambda e: e[0] != c and e[1] != c, sorted_edge))
-        sorted_edge = list(filter(lambda x: is_valid_solution(G, [c], k + [x]), sorted_edge))
-        nlargest = heapq.nlargest(beamSize, sorted_edge, key=lambda x: calculate_score(G, [c], k + [x]))
-        beams.extend([[[x for x in sorted_edge if x != i], [i], calculate_score(G, [c], [i]), [c]] for i in nlargest])
+    # Set up Basic edge
+    if len(score_node) == 0:
+        sorted_edge_ = list(filter(lambda x: is_valid_solution(G, [c], k + [x]), sorted_edge))
+        nlargest = heapq.nlargest(beamSize ** 2, sorted_edge_, key=lambda x: calculate_score(G, [], k + [x]))
+        beams.extend([[[x for x in sorted_edge_ if x != i], [i], calculate_score(G, [], [i]), []] for i in nlargest])
     
-    if len(beams) == 0:
-        return [], []
+    else:
+        for c in score_node:
+            sorted_edge_ =list(filter(lambda e: e[0] != c and e[1] != c, sorted_edge))
+            sorted_edge_ = list(filter(lambda x: is_valid_solution(G, [c], k + [x]), sorted_edge_))
+            nlargest = heapq.nlargest(beamSize, sorted_edge_, key=lambda x: calculate_score(G, [c], k + [x]))
+            beams.extend([[[x for x in sorted_edge_ if x != i], [i], calculate_score(G, [c], [i]), [c]] for i in nlargest])
 
     k_tracker = 0
     while k_tracker < knum - 1:
@@ -169,6 +173,9 @@ def look_advace_small(G, cnum, knum, beamSize):
         beams = heapq.nlargest(beamSize * 2, new_beams, key=lambda x: x[2])
                         
         k_tracker += 1
+
+    if len(beams) == 0:
+        return [], []
         
     best = max(beams, key=lambda x:x[2])
 
