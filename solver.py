@@ -5,7 +5,7 @@ from utils import is_valid_solution, calculate_score, diff_score_files
 import sys
 from os.path import basename, normpath
 import glob
-from heuristics import heuristics_greedy
+from heuristics import heuristics_greedy, look_advace_small
 from naive import naive
 
 def solve(G):
@@ -18,7 +18,7 @@ def solve(G):
     """
     size = G.number_of_nodes()
     if size <= 30:
-        return heuristics_greedy(G, 1, 15)
+        return look_advace_small(G, 1, 15, 3)
     elif size <= 50:
         return heuristics_greedy(G, 3, 50)
     else:
@@ -59,10 +59,10 @@ def run_input(size):
 # For testing a folder of inputs to create a folder of outputs, you can use glob (need to import it)
 if __name__ == '__main__':
     # size = ['small', 'medium', 'large']
-    # size = ['medium']
+    # size = ['small']
     # for s in size:
     #     inputs = glob.glob('inputs/'+ s + '/*')
-    #     for input_path in inputs:
+    #     for input_path in ['inputs/small/small-1.in']:
     #         print(input_path)
     #         output_path = 'outputs/' + s + '/' + basename(normpath(input_path))[:-3] + '.out'
     #         G = read_input_file(input_path)

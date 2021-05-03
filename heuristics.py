@@ -1,6 +1,7 @@
 import networkx as nx
 import numpy as np
 from utils import calculate_score, is_valid_solution
+import heapq
 
 def dijsktra_path(G):
     node_count = len(G.nodes)
@@ -148,22 +149,28 @@ def look_advace_small(G, cnum, knum, beamSize):
     beams = [[[x for x in sorted_edge if x != i], [i], calculate_score(G, c, [i])] for i in nlargest] # [list_of_edges, k, score]
     
     k_tracker = 0
-    while k_tracker < knum:
+    while k_tracker < knum - 1:
         new_beams = []
         # curate new beams 
         for b in beams:
             b[0] = list(filter(lambda x: is_valid_solution(G, c, b[1] + [x]), b[0]))
-            nlargest = heapq.nlargest(beamSize, b[0], key=lambda x: calculate_score(G, c, b[1] + [x]))
-            for i in nlargest:
-                new_beams.append([[x for x in b[0] if x != i], b[1] + [i], calculate_score(G, c, b[1] + [i])])
+            if len(b[0]) == 0:
+                new_beams.append(b)
+            else:
+                nlargest = heapq.nlargest(beamSize, b[0], key=lambda x: calculate_score(G, c, b[1] + [x]))
+                for i in nlargest:
+                    new_beams.append([[x for x in b[0] if x != i], b[1] + [i], calculate_score(G, c, b[1] + [i])])
             beams = heapq.nlargest(beamSize, new_beams, key=lambda x: x[2])
                         
         k_tracker += 1
     
     best = max(beams, key=lambda x:x[2])
+    print(best[1])
+    print(len(best[1]))
+    print(best[2])
     
 
-    return c, best[1], best[2]
+    return c, best[1]
     
     
 # look_advace_small(Gg, 1, 25, 3)
