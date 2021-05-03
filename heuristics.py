@@ -1,5 +1,6 @@
 import networkx as nx
 import numpy as np
+from utils import calculate_score, is_valid_solution
 
 def dijsktra_path(G):
     node_count = len(G.nodes)
@@ -30,8 +31,8 @@ def score_components(Gg):
             in_shortest_path.append(0)
     
     #normalize score 
-    max_weight, max_conn = max(weight), max(conn)
-    weight = [w/max_weight for w in weight] #less than 1
+    min_weight, max_conn = min(weight), max(conn)
+    weight = [min_weight/w for w in weight] #less than 1
     conn  = [c/max_conn for c in conn] #less than 1
     
     #calculate edge score
@@ -61,7 +62,7 @@ def score_components(Gg):
     return sorted_edge, sorted_node
     
 
-def heuristics_greedy(G, cnum, knum):
+def heuristics_plain(G, cnum, knum):
     """
     Args:
         G: networkx.Graph
@@ -93,6 +94,38 @@ def heuristics_greedy(G, cnum, knum):
                 G_cut.add_edge(u, v)
         if knum == 0:
             break
+    
+    return c, k
+
+
+def heuristics_greedy(G, cnum, knum):
+    
+    G_cut = G.copy()
+    sorted_edge, sorted_node = score_components(G_cut)
+    sorted_node = list(sorted_node)
+    c, k = [], []
+    
+    while len(c) < cnum:
+        sorted_node = list(filter(lambda x: is_valid_solution(G, c + [x], k), sorted_node))
+        score_node = max(sorted_node, key=lambda x: calculate_score(G, c + [x], k))
+        sorted_node.remove(score_node)
+        c.append(score_node)
+        
+        if len(sorted_node) == 0:
+            break
+    
+    sorted_edge =list(filter(lambda e: e[0] not in c and e[1] not in c, sorted_edge))
+    print(c)
+    
+    while len(k) < knum:
+        
+        sorted_edge = list(filter(lambda x: is_valid_solution(G, c, k + [x]), sorted_edge))
+        if len(sorted_edge) == 0:
+            break
+        score_edge = max(sorted_edge, key=lambda x: calculate_score(G, c, k + [x]))
+        k.append(score_edge)
+        print(len(k))
+        sorted_edge.remove(score_edge)
     
     return c, k
 

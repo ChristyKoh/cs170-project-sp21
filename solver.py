@@ -18,11 +18,11 @@ def solve(G):
     """
     size = G.number_of_nodes()
     if size <= 30:
-        return naive(G, 1, 15)
+        return heuristics_greedy(G, 1, 15)
     elif size <= 50:
-        return naive(G, 3, 50)
+        return heuristics_greedy(G, 3, 50)
     else:
-        return naive(G, 5, 100)
+        return heuristics_greedy(G, 5, 100)
 
 def naive(G, cnum, knum):
     """
@@ -137,11 +137,16 @@ def naive(G, cnum, knum):
 
 # For testing a folder of inputs to create a folder of outputs, you can use glob (need to import it)
 if __name__ == '__main__':
-    inputs = glob.glob('inputs/small/*')
-    for input_path in inputs:
-        output_path = 'outputs/small/' + basename(normpath(input_path))[:-3] + '.out'
-        G = read_input_file(input_path)
-        c, k = solve(G)
-        assert is_valid_solution(G, c, k)
-        distance = calculate_score(G, c, k)
-        write_output_file(G, c, k, output_path)
+    # size = ['small', 'medium', 'large']
+    size = ['medium']
+    for s in size:
+        inputs = glob.glob('inputs/'+ s + '/*')
+        for input_path in inputs:
+            print(input_path)
+            output_path = 'outputs/' + s + '/' + basename(normpath(input_path))[:-3] + '.out'
+            G = read_input_file(input_path)
+            c, k = solve(G)
+            assert is_valid_solution(G, c, k)
+            distance = calculate_score(G, c, k)
+            write_output_file(G, c, k, output_path)
+        print(s + ' complete')

@@ -167,3 +167,5 @@ def write_output_file(G, c, k, path):
         for road in k:
             fo.write(str(road[0]) + " " + str(road[1]) + "\n")
         fo.close()
+
+
