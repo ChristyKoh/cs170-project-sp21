@@ -117,7 +117,7 @@ def heuristics_greedy(G, cnum, knum):
             break
     
     sorted_edge =list(filter(lambda e: e[0] not in c and e[1] not in c, sorted_edge))
-    print(c)
+    # print(c)
     
     while len(k) < knum:
         
@@ -184,22 +184,114 @@ def look_advace_small(G, cnum, knum, beamSize):
     return best[3], best[1]
 
 
+def dj_beam_search(G, cnum, knum, beamSize):
+    # print('hey!')
+    c, k = [], []
+    edges = list(G.edges)
+    node_count = len(G.nodes)
+    nodes = list(G.nodes)
+    nodes.remove(0)
+    nodes.remove(node_count - 1)
     
     
-# look_advace_small(Gg, 1, 25, 3)
+    G_copy = G.copy()
+    beams = [[[], []]]  #[c, k, score]
+    k_count = 0
+    # print('aye')
+    while k_count < knum - 1:
+        # print(k_count)
+        new_beams = []
+        for b in beams:
+            shortest = dijsktra_path_(G.copy(), b[0], b[1])
+            shortest = list(filter(lambda x: is_valid_solution(G_copy, b[0], b[1] + [x]), shortest))
+            best_edges = heapq.nlargest(beamSize, shortest, key=lambda x: calculate_score(G_copy, b[0], b[1] + [x]))
+            for i in best_edges:
+                new_beams.append([b[0], b[1] + [i], calculate_score(G_copy, b[0], b[1] + [i])])
+            if len(best_edges) == 0:
+                new_beams.append(b)
+            
+        beams = heapq.nlargest(beamSize, new_beams, key=lambda x: x[2]) #beamsize * 2?
+        
+        k_count += 1 
+    
+    new_beams = []
+    for b in beams:
+        overlap = {}
+        
+        edges = b[1]
+        for i in edges:
+            if i[0] not in overlap:
+                overlap[i[0]] = 1
+            elif i[1] not in overlap:
+                overlap[i[1]] = 1
+            else:
+                overlap[i[1]] += 1
+                overlap[i[0]] += 1
+        overlap.pop(0,None)
+        overlap.pop(node_count - 1,None)
+        
+                
+        sorted_node = heapq.nlargest(beamSize, overlap.keys(), key=lambda x: overlap[x])
+        
+    
+        node_perm = list(permutations(sorted_node, cnum))
+        node_perm = list(filter(lambda x: is_valid_solution(G_copy, x, b[1]), node_perm))
+        sorted_node_perm = heapq.nlargest(beamSize, node_perm, key=lambda x: calculate_score(G_copy, x, edges))
 
-# def remove_edge(G, edge):
+        for c in sorted_node_perm:
+            new_beams.append([c, edges, calculate_score(G_copy, c, edges)])
+        if len(sorted_node_perm) == 0:
+            new_beams.append([[], edges, calculate_score(G_copy, [], edges)])
+    
+    beams = heapq.nlargest(beamSize * 2, new_beams, key=lambda x: x[2])
+    # print('stage c')
+    # print(beams)
+    
+    #remove edges that overlap with node
+    for b in beams:
+        b[1] =list(filter(lambda e: e[0] not in b[0] and e[1] not in b[0], b[1]))
+        
+    
+    #add edge till limit is reached
+    
+    done = []
+    # print(beams)
+    
+    while len(done) < beamSize:
+        new_beams = []
+        for b in beams:
+            if len(b[1]) == knum:
+                done.append(b)
+            else:
+                shortest = dijsktra_path_(G.copy(), b[0], b[1])
+                shortest = list(filter(lambda x: is_valid_solution(G_copy, b[0], b[1] + [x]), shortest))
+                shortest =list(filter(lambda e: e[0] not in b[0] and e[1] not in b[0], shortest))
+                best_edges = heapq.nlargest(beamSize, shortest, key=lambda x: calculate_score(G_copy, b[0], b[1] + [x]))
+                for i in best_edges:
+                    new_beams.append([b[0], b[1] + [i], calculate_score(G_copy, b[0], b[1] + [i])])
+                if len(best_edges) == 0:
+                    new_beams.append(b)
+        if beams == new_beams:
+            done.extend(new_beams)
+        beams = heapq.nlargest(beamSize * 2, new_beams, key=lambda x: x[2]) #beamsize * 2?
+    
+    
+    best = max(done, key=lambda x:x[2])
+    
+    return best[0], best[1]
 
-# def remove_node(G, node):
-#     """
-#     Remove node from G if possible. 
+    
 
-#     Args:
-#         G ([type]): [description]
-#         node ([type]): [description]
-#     """
-
-
+    
+    
+def dijsktra_path_(G, c , k):
+    G.remove_edges_from(k)
+    G.remove_nodes_from(c)
+    node_count = len(G.nodes)
+    path = nx.dijkstra_path(G, 0, node_count - 1)
+#     print(path)
+    edge = [(path[i], path[i + 1]) for i in range(len(path) - 1)]
+    return edge
             
     
 

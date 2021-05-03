@@ -5,7 +5,7 @@ from utils import is_valid_solution, calculate_score, diff_score_files
 import sys
 from os.path import basename, normpath
 import glob
-from heuristics import heuristics_greedy, look_advace_small
+from heuristics import heuristics_greedy, look_advace_small, dj_beam_search
 from naive import naive
 
 def solve(G):
@@ -20,9 +20,9 @@ def solve(G):
     if size <= 30:
         return look_advace_small(G, 1, 15, 3)
     elif size <= 50:
-        return heuristics_greedy(G, 3, 50)
+        return dj_beam_search(G, 3, 50, 6)
     else:
-        return heuristics_greedy(G, 5, 100)
+        return dj_beam_search(G, 5, 100, 6)
 
 def run_input(size):
     print(f"-------- RUNNING {size.upper()} INPUTS --------")
@@ -30,17 +30,25 @@ def run_input(size):
     inputs = sorted(glob.glob(f'inputs/{size}/*'))
     log = open(f'outputs/{size}_score_{log_suffix}', 'w+')
     count = 1
-    for input_path in inputs[24:]:
-        print(str(count)  + ': ' + input_path)
-        name = basename(normpath(input_path))
-        output_path = f'outputs/{size}/{name[:-3]}.out'
-        G = read_input_file(input_path)
-        c, k = solve(G)
-        assert is_valid_solution(G, c, k)
-        distance = calculate_score(G, c, k)
-        log.write(f"{name}: {distance}\n")
-        write_output_file(G, c, k, output_path)
-        count += 1
+    for input_path in inputs[5:]:
+        try:
+            print(str(count)  + ': ' + input_path)
+            name = basename(normpath(input_path))
+            output_path = f'outputs/{size}/{name[:-3]}.out'
+            G = read_input_file(input_path)
+            c, k = solve(G)
+            assert is_valid_solution(G, c, k)
+            distance = calculate_score(G, c, k)
+            log.write(f"{name}: {distance}\n")
+            write_output_file(G, c, k, output_path)
+            count += 1
+        except KeyboardInterrupt:
+            sys.exit()
+            pass
+        except:
+            e = sys.exc_info()[0]
+            log.write(f"{name}: {e}")
+            print('ERROR')
     log.close()
     print(f"runtime: {(time.time() - starttime)} sec")
 
