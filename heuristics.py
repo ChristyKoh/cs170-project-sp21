@@ -2,6 +2,7 @@ import networkx as nx
 import numpy as np
 from utils import calculate_score, is_valid_solution
 import heapq
+from itertools import permutations 
 
 def dijsktra_path(G):
     node_count = len(G.nodes)
@@ -176,11 +177,13 @@ def look_advace_small(G, cnum, knum, beamSize):
 
     if len(beams) == 0:
         return [], []
-        
+
     best = max(beams, key=lambda x:x[2])
 
     
     return best[3], best[1]
+
+
     
     
 # look_advace_small(Gg, 1, 25, 3)
