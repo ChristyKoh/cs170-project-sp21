@@ -24,13 +24,13 @@ def solve(G):
     else:
         return dj_beam_search(G, 5, 100, 6)
 
-def run_input(size):
+def run_input(size, start=0):
     print(f"-------- RUNNING {size.upper()} INPUTS --------")
     starttime = time.time()
     inputs = sorted(glob.glob(f'inputs/{size}/*'))
     log = open(f'outputs/{size}_score_{log_suffix}', 'w+')
     count = 1
-    for input_path in inputs[63:]:
+    for input_path in inputs[start:]:
         try:
             print(str(count)  + ': ' + input_path)
             name = basename(normpath(input_path))
@@ -83,17 +83,18 @@ if __name__ == '__main__':
     #         write_output_file(G, c, k, output_path)
     #     print(s + ' complete')
     sizes = sys.argv[1]
+    start = int(sys.argv[2])
 
     log_suffix = time.strftime("%d%m%y_%H:%M:%S", time.localtime()) + ".txt"
 
     if 's' in sizes:
-        run_input('small')
+        run_input('small', start)
         diff_score_files('small')
 
     if 'm' in sizes:
-        run_input('medium')
+        run_input('medium', start)
         diff_score_files('medium')
 
     if 'l' in sizes:
-        run_input('large')
+        run_input('large', start)
         diff_score_files('large')
