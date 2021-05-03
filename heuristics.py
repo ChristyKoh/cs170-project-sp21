@@ -136,41 +136,40 @@ def look_advace_small(G, cnum, knum, beamSize):
     G_cut = G.copy()
     sorted_edge, sorted_node = score_components(G_cut)
     sorted_node = sorted_node[:30]
+    score_node = []
     c, k = [], []
     
-    while len(c) < cnum:
-        score_node = max(sorted_node, key=lambda x: calculate_score(G, c + [x], k))
-        c.append(score_node)
+    #for medium / large select more c 
+    sorted_node = list(filter(lambda x: is_valid_solution(G, c + [x], k), sorted_node))
+    score_node = heapq.nlargest(beamSize, sorted_node, key=lambda x: calculate_score(G, c + [x], k))
     
-    sorted_edge =list(filter(lambda e: e[0] not in c and e[1] not in c, sorted_edge))
-    sorted_edge = list(filter(lambda x: is_valid_solution(G, c, k + [x]), sorted_edge))
-    nlargest = heapq.nlargest(beamSize, sorted_edge, key=lambda x: calculate_score(G, c, k + [x]))
-    
-    beams = [[[x for x in sorted_edge if x != i], [i], calculate_score(G, c, [i])] for i in nlargest] # [list_of_edges, k, score]
-    
+    beams = []# [list_of_edges, k, score, c]
+
+    for c in score_node:
+        sorted_edge =list(filter(lambda e: e[0] != c and e[1] != c, sorted_edge))
+        sorted_edge = list(filter(lambda x: is_valid_solution(G, [c], k + [x]), sorted_edge))
+        nlargest = heapq.nlargest(beamSize, sorted_edge, key=lambda x: calculate_score(G, [c], k + [x]))
+        beams.extend([[[x for x in sorted_edge if x != i], [i], calculate_score(G, [c], [i]), [c]] for i in nlargest])
     k_tracker = 0
     while k_tracker < knum - 1:
         new_beams = []
         # curate new beams 
         for b in beams:
-            b[0] = list(filter(lambda x: is_valid_solution(G, c, b[1] + [x]), b[0]))
+            b[0] = list(filter(lambda x: is_valid_solution(G, b[3], b[1] + [x]), b[0]))
             if len(b[0]) == 0:
                 new_beams.append(b)
             else:
-                nlargest = heapq.nlargest(beamSize, b[0], key=lambda x: calculate_score(G, c, b[1] + [x]))
+                nlargest = heapq.nlargest(beamSize, b[0], key=lambda x: calculate_score(G, b[3], b[1] + [x]))
                 for i in nlargest:
-                    new_beams.append([[x for x in b[0] if x != i], b[1] + [i], calculate_score(G, c, b[1] + [i])])
-            beams = heapq.nlargest(beamSize, new_beams, key=lambda x: x[2])
+                    new_beams.append([[x for x in b[0] if x != i], b[1] + [i], calculate_score(G, b[3], b[1] + [i]), b[3]])
+        beams = heapq.nlargest(beamSize * 2, new_beams, key=lambda x: x[2])
                         
         k_tracker += 1
     
     best = max(beams, key=lambda x:x[2])
-    print(best[1])
-    print(len(best[1]))
-    print(best[2])
-    
 
-    return c, best[1]
+    
+    return best[3], best[1]
     
     
 # look_advace_small(Gg, 1, 25, 3)

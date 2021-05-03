@@ -29,7 +29,9 @@ def run_input(size):
     starttime = time.time()
     inputs = sorted(glob.glob(f'inputs/{size}/*'))
     log = open(f'outputs/{size}_score_{log_suffix}', 'w+')
+    count = 1
     for input_path in inputs:
+        print(str(count)  + ': ' + input_path)
         name = basename(normpath(input_path))
         output_path = f'outputs/{size}/{name[:-3]}.out'
         G = read_input_file(input_path)
@@ -38,6 +40,7 @@ def run_input(size):
         distance = calculate_score(G, c, k)
         log.write(f"{name}: {distance}\n")
         write_output_file(G, c, k, output_path)
+        count += 1
     log.close()
     print(f"runtime: {(time.time() - starttime)} sec")
 
