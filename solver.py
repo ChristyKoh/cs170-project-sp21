@@ -30,7 +30,7 @@ def run_input(size):
     inputs = sorted(glob.glob(f'inputs/{size}/*'))
     log = open(f'outputs/{size}_score_{log_suffix}', 'w+')
     count = 1
-    for input_path in inputs[5:]:
+    for input_path in inputs[63:]:
         try:
             print(str(count)  + ': ' + input_path)
             name = basename(normpath(input_path))

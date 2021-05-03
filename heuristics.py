@@ -195,7 +195,7 @@ def dj_beam_search(G, cnum, knum, beamSize):
     
     
     G_copy = G.copy()
-    beams = [[[], []]]  #[c, k, score]
+    beams = [[[], []]]  #[nodes to be removed, edges to be removed, score]
     k_count = 0
     # print('aye')
     while k_count < knum - 1:
