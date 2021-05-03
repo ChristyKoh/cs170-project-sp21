@@ -2,6 +2,21 @@ import networkx as nx
 from collections import Counter
 import numpy as np
 
+def edge_score(e):
+    """
+    return score of an edge given edge
+    Args:
+        e: tuple (u, v, weight)
+    returns:
+        float: some heuristic score
+    """
+
+    # 0: trivial return weight
+    return e[2]
+
+    # 1: 
+    # return 
+
 def naive(G, cnum, knum):
     """
     repeatedly find k-greedy min path.
@@ -21,6 +36,7 @@ def naive(G, cnum, knum):
 
     nodes = [] # captures freq of nodes in shortest paths
     node_scores = [0 for _ in range(G_cut.number_of_nodes())] # score for nodes to cut
+    edge_scores = [0 for _ in range(G_cut.number_of_nodes())] # score for nodes to cut
     forbidden_edges = set() # cannot cuts
     forbidden_nodes = set() # cannot rm
     stop_cutting = False
@@ -38,7 +54,7 @@ def naive(G, cnum, knum):
             u = v
 
         # take min edge
-        edges.sort(key=lambda e: e[2]) ## CAN CHANGE SCORING METHOD HERE
+        edges.sort(key=edge_score) ## CAN CHANGE SCORING METHOD HERE
         # print(f"sorted edges: {edges}")
 
         all_edges_checked = True
@@ -86,6 +102,8 @@ def naive(G, cnum, knum):
                 # print(f"{knum}: cutting node {top_c}")
                 c.append(top_c)
                 cnum -= 1
+
+                nodes = [n for n in nodes if n != top_c]
 
                 # add back k shortest paths removed
                 num_edges_before = len(k)
