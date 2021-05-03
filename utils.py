@@ -47,6 +47,20 @@ def calculate_score(G, c, k):
     difference = final_min_dist - original_min_dist
     return difference
 
+def diff_two_files(curr, prev, target):
+    """
+    Calculates the improvement between two most recent score files, 
+    writes to diff file.
+    Args:
+        curr: path to most recent file
+        prev: "             previous file
+        target: "       diff file to write result to
+    Returns:
+        float: net gain
+        float: net loss
+    """
+    
+
 def diff_score_files(size):
     """
     Calculates the improvement between two most recent score files, 
