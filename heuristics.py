@@ -152,7 +152,7 @@ def look_advace_small(G, cnum, knum, beamSize):
         beams.extend([[[x for x in sorted_edge if x != i], [i], calculate_score(G, [c], [i]), [c]] for i in nlargest])
     
     if len(beams) == 0:
-        return c, k
+        return [], []
 
     k_tracker = 0
     while k_tracker < knum - 1:
