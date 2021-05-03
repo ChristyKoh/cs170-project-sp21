@@ -185,10 +185,9 @@ def look_advace_small(G, cnum, knum, beamSize):
 
 
 def dj_beam_search(G, cnum, knum, beamSize):
-    # print('hey!')
     c, k = [], []
     edges = list(G.edges)
-    node_count = len(G.nodes)
+    node_count = len(G.nodes) 
     nodes = list(G.nodes)
     nodes.remove(0)
     nodes.remove(node_count - 1)
@@ -202,7 +201,7 @@ def dj_beam_search(G, cnum, knum, beamSize):
         # print(k_count)
         new_beams = []
         for b in beams:
-            shortest = dijsktra_path_(G.copy(), b[0], b[1])
+            shortest = dijsktra_path_(G.copy(), b[0], b[1], 0, node_count - 1)
             shortest = list(filter(lambda x: is_valid_solution(G_copy, b[0], b[1] + [x]), shortest))
             best_edges = heapq.nlargest(beamSize, shortest, key=lambda x: calculate_score(G_copy, b[0], b[1] + [x]))
             for i in best_edges:
@@ -232,11 +231,11 @@ def dj_beam_search(G, cnum, knum, beamSize):
         
                 
         sorted_node = heapq.nlargest(beamSize, overlap.keys(), key=lambda x: overlap[x])
-        
+        print(sorted_node)
     
         node_perm = list(permutations(sorted_node, cnum))
-        node_perm = list(filter(lambda x: is_valid_solution(G_copy, x, b[1]), node_perm))
-        sorted_node_perm = heapq.nlargest(beamSize, node_perm, key=lambda x: calculate_score(G_copy, x, edges))
+        node_perm = list(filter(lambda x: is_valid_solution(G_copy, x, b[1]), node_perm)) #is solution valid
+        sorted_node_perm = heapq.nlargest(beamSize, node_perm, key=lambda x: calculate_score(G_copy, x, edges)) #sort node perm
 
         for c in sorted_node_perm:
             new_beams.append([c, edges, calculate_score(G_copy, c, edges)])
@@ -250,6 +249,8 @@ def dj_beam_search(G, cnum, knum, beamSize):
     #remove edges that overlap with node
     for b in beams:
         b[1] =list(filter(lambda e: e[0] not in b[0] and e[1] not in b[0], b[1]))
+#         print(is_valid_solution(G_copy, b[0], b[1]))
+        print(b[0], b[1])
         
     
     #add edge till limit is reached
@@ -263,7 +264,7 @@ def dj_beam_search(G, cnum, knum, beamSize):
             if len(b[1]) == knum:
                 done.append(b)
             else:
-                shortest = dijsktra_path_(G.copy(), b[0], b[1])
+                shortest = dijsktra_path_(G.copy(), b[0], b[1], 0, node_count - 1)
                 shortest = list(filter(lambda x: is_valid_solution(G_copy, b[0], b[1] + [x]), shortest))
                 shortest =list(filter(lambda e: e[0] not in b[0] and e[1] not in b[0], shortest))
                 best_edges = heapq.nlargest(beamSize, shortest, key=lambda x: calculate_score(G_copy, b[0], b[1] + [x]))
@@ -281,14 +282,10 @@ def dj_beam_search(G, cnum, knum, beamSize):
     return best[0], best[1]
 
     
-
-    
-    
-def dijsktra_path_(G, c , k):
+def dijsktra_path_(G, c , k, s, t):
     G.remove_edges_from(k)
     G.remove_nodes_from(c)
-    node_count = len(G.nodes)
-    path = nx.dijkstra_path(G, 0, node_count - 1)
+    path = nx.dijkstra_path(G, s, t)
 #     print(path)
     edge = [(path[i], path[i + 1]) for i in range(len(path) - 1)]
     return edge

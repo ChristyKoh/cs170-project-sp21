@@ -18,7 +18,7 @@ def solve(G):
     """
     size = G.number_of_nodes()
     if size <= 30:
-        return look_advace_small(G, 1, 15, 3)
+        return dj_beam_search(G, 1, 15, 6)
     elif size <= 50:
         return dj_beam_search(G, 3, 50, 6)
     else:
