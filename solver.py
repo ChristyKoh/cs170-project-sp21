@@ -18,9 +18,9 @@ def solve(G):
     """
     size = G.number_of_nodes()
     if size <= 30:
-        return dj_beam_search(G, 1, 15, 6)
+        return dj_beam_search(G, 1, 15, 12)
     elif size <= 50:
-        return dj_beam_search(G, 3, 50, 6)
+        return dj_beam_search(G, 3, 50, 10)
     else:
         return dj_beam_search(G, 5, 100, 6)
 
@@ -47,7 +47,7 @@ def run_input(size, start=0):
             pass
         except:
             e = sys.exc_info()[0]
-            log.write(f"{name}: {e}")
+            log.write(f"{name}: {e}\n")
             print('ERROR')
     log.close()
     print(f"runtime: {(time.time() - starttime)} sec")

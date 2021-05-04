@@ -84,10 +84,11 @@ def diff_score_files(size):
 
     while last_file.readable() and prev_file.readable():
         lline, pline = last_file.readline().split(" "), prev_file.readline().split(" ")
-        assert lline[0] == pline[0]
 
-        if len(lline) < 2: 
-            break
+        if len(lline) != 2 or len(pline) != 2:
+            continue
+
+        assert lline[0] == pline[0]
 
         # extract scores
         last_score = float(lline[1])
