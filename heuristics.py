@@ -126,7 +126,7 @@ def heuristics_greedy(G, cnum, knum):
             break
         score_edge = max(sorted_edge, key=lambda x: calculate_score(G, c, k + [x]))
         k.append(score_edge)
-        print(len(k))
+        # print(len(k))
         sorted_edge.remove(score_edge)
     
     return c, k
@@ -197,6 +197,8 @@ def dj_beam_search(G, cnum, knum, beamSize):
     beams = [[[], []]]  #[nodes to be removed, edges to be removed, score]
     k_count = 0
     # print('aye')
+
+    # Phase 1: Populate Edges
     while k_count < knum - 1:
         # print(k_count)
         new_beams = []
@@ -213,6 +215,7 @@ def dj_beam_search(G, cnum, knum, beamSize):
         
         k_count += 1 
     
+    # Phase 2: Populate Nodes
     new_beams = []
     for b in beams:
         overlap = {}
@@ -221,17 +224,20 @@ def dj_beam_search(G, cnum, knum, beamSize):
         for i in edges:
             if i[0] not in overlap:
                 overlap[i[0]] = 1
-            elif i[1] not in overlap:
+            else:
+                overlap[i[0]] += 1
+
+            if i[1] not in overlap:
                 overlap[i[1]] = 1
             else:
                 overlap[i[1]] += 1
-                overlap[i[0]] += 1
+
         overlap.pop(0,None)
         overlap.pop(node_count - 1,None)
         
                 
         sorted_node = heapq.nlargest(beamSize, overlap.keys(), key=lambda x: overlap[x])
-        print(sorted_node)
+        # print(sorted_node)
     
         node_perm = list(permutations(sorted_node, cnum))
         node_perm = list(filter(lambda x: is_valid_solution(G_copy, x, b[1]), node_perm)) #is solution valid
@@ -250,7 +256,7 @@ def dj_beam_search(G, cnum, knum, beamSize):
     for b in beams:
         b[1] =list(filter(lambda e: e[0] not in b[0] and e[1] not in b[0], b[1]))
 #         print(is_valid_solution(G_copy, b[0], b[1]))
-        print(b[0], b[1])
+        # print(b[0], b[1])
         
     
     #add edge till limit is reached
@@ -286,7 +292,6 @@ def dijsktra_path_(G, c , k, s, t):
     G.remove_edges_from(k)
     G.remove_nodes_from(c)
     path = nx.dijkstra_path(G, s, t)
-#     print(path)
     edge = [(path[i], path[i + 1]) for i in range(len(path) - 1)]
     return edge
             
